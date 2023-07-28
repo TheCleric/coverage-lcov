@@ -34,15 +34,25 @@ class Converter:
         config = self.cov_obj.config
 
         if config.report_include:
-            matcher = FnmatchMatcher(  # pylint: disable=too-many-function-args
-                prep_patterns(config.report_include), "report_include"
-            )
+            try:
+                matcher = FnmatchMatcher(  # pylint: disable=too-many-function-args
+                    prep_patterns(config.report_include), "report_include"
+                )
+            except TypeError:
+                matcher = FnmatchMatcher(  # pylint: disable=too-many-function-args
+                    prep_patterns(config.report_include),
+                )
             file_reporters = [fr for fr in file_reporters if matcher.match(fr.filename)]
 
         if config.report_omit:
-            matcher = FnmatchMatcher(  # pylint: disable=too-many-function-args
-                prep_patterns(config.report_omit), "report_omit"
-            )
+            try:
+                matcher = FnmatchMatcher(  # pylint: disable=too-many-function-args
+                    prep_patterns(config.report_omit), "report_omit"
+                )
+            except TypeError:
+                matcher = FnmatchMatcher(  # pylint: disable=too-many-function-args
+                    prep_patterns(config.report_omit),
+                )
             file_reporters = [
                 fr for fr in file_reporters if not matcher.match(fr.filename)
             ]

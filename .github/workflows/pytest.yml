@@ -18,21 +18,20 @@ jobs:
         - 3.8
         - 3.9
         platform:
-        - ubuntu-latest
+        - ubuntu-20.04
         - macos-latest
         - windows-latest
     runs-on: "${{ matrix.platform }}"
     steps:
-      - uses: actions/checkout@v2
-      - name: Set up Python
-        uses: actions/setup-python@v2
+      - uses: actions/checkout@v4
+
+      - name: Set up Python 3.6
+        uses: actions/setup-python@v5
         with:
-          python-version: "${{ matrix.python-version }}"
+          python-version: "3.6"
   
-      - name: Bootstrap poetry
-        shell: bash
-        run: |
-          curl -sSL https://raw.githubusercontent.com/python-poetry/poetry/master/install-poetry.py | python -
+      - name: Setup poetry
+        uses: abatilo/actions-poetry@v2
 
       - name: Update PATH
         if: ${{ matrix.platorm != 'windows-latest' }}

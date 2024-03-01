@@ -24,11 +24,8 @@ jobs:
         with:
           python-version: "3.6"
   
-      - name: Bootstrap poetry
-        shell: bash
-        run: |
-          curl -sL https://install.python-poetry.org/ \
-            | python -
+      - name: Setup poetry
+        uses: abatilo/actions-poetry@v2
 
       - name: Update PATH
         shell: bash

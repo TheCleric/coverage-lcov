@@ -2,12 +2,29 @@ import logging
 from typing import Any, List, Optional, Union
 
 import coverage
-from coverage.files import FnmatchMatcher, prep_patterns
+from coverage.files import prep_patterns
+try:
+    from coverage.files import GlobMatcher
+except ImportError:  # compatibility with coverage<7.0
+    from coverage.files import FnmatchMatcher as GlobMatcher
 from coverage.misc import CoverageException, NoSource, NotPython
 from coverage.python import PythonFileReporter
 from coverage.results import Analysis
 
 log = logging.getLogger("coverage_lcov.converter")
+
+
+def GlobMatcher_compat(pattern, name):
+    """Cross-version compatibility function.
+
+    Makes coverage_lcov compatible with older coverage versions
+    """
+    try:
+        return GlobMatcher(  # pylint: disable=too-many-function-args
+            pattern, name
+        )
+    except TypeError:
+        return GlobMatcher(pattern)  # pylint: disable=too-many-function-args
 
 
 class Converter:
@@ -34,25 +51,15 @@ class Converter:
         config = self.cov_obj.config
 
         if config.report_include:
-            try:
-                matcher = FnmatchMatcher(  # pylint: disable=too-many-function-args
-                    prep_patterns(config.report_include), "report_include"
-                )
-            except TypeError:
-                matcher = FnmatchMatcher(  # pylint: disable=too-many-function-args
-                    prep_patterns(config.report_include),
-                )
+            matcher = GlobMatcher_compat(
+                prep_patterns(config.report_include), "report_include"
+            )
             file_reporters = [fr for fr in file_reporters if matcher.match(fr.filename)]
 
         if config.report_omit:
-            try:
-                matcher = FnmatchMatcher(  # pylint: disable=too-many-function-args
-                    prep_patterns(config.report_omit), "report_omit"
-                )
-            except TypeError:
-                matcher = FnmatchMatcher(  # pylint: disable=too-many-function-args
-                    prep_patterns(config.report_omit),
-                )
+            matcher = GlobMatcher_compat(  # pylint: disable=too-many-function-args
+                prep_patterns(config.report_omit), "report_omit"
+            )
             file_reporters = [
                 fr for fr in file_reporters if not matcher.match(fr.filename)
             ]

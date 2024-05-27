@@ -57,7 +57,7 @@ class Converter:
             file_reporters = [fr for fr in file_reporters if matcher.match(fr.filename)]
 
         if config.report_omit:
-            matcher = GlobMatcher_compat(  # pylint: disable=too-many-function-args
+            matcher = GlobMatcher_compat(
                 prep_patterns(config.report_omit), "report_omit"
             )
             file_reporters = [

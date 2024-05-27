@@ -40,7 +40,7 @@ strict_equality = true
 
 [tool.poetry]
 name = "coverage-lcov"
-version = "0.2.4"
+version = "0.2.5"
 description = "A simple .coverage to LCOV converter"
 authors = [
     "Adam Weeden <adamweeden@gmail.com>",
@@ -55,8 +55,8 @@ coverage-lcov = "coverage_lcov.cli:main"
 
 [tool.poetry.dependencies]
 python = "^3.6.3"
-coverage = { extras = ["toml"], version = "^5.5" }
-click = "^7.1.2"
+coverage = { extras = ["toml"], version = ">=5.5" }
+click = ">=7.1.2"
 types-toml = "^0.1.5"
 
 [tool.poetry.dev-dependencies]
@@ -64,7 +64,7 @@ black = "^21.5b0"
 isort = "^5.8.0"
 mypy = "^0.910"
 pytest = "^5.2"
-types-click = "^7.1.5"
+types-click = ">=7.1.5"
 pylint = "^2.10.2"
 
 [build-system]

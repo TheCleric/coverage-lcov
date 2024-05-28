@@ -2,7 +2,7 @@ import logging
 from typing import Any, List, Optional, Union
 
 import coverage
-from coverage.files import FnmatchMatcher, prep_patterns
+from coverage.files import GlobMatcher, prep_patterns
 from coverage.misc import CoverageException, NoSource, NotPython
 from coverage.python import PythonFileReporter
 from coverage.results import Analysis
@@ -34,13 +34,13 @@ class Converter:
         config = self.cov_obj.config
 
         if config.report_include:
-            matcher = FnmatchMatcher(  # pylint: disable=too-many-function-args
+            matcher = GlobMatcher(  # pylint: disable=too-many-function-args
                 prep_patterns(config.report_include), "report_include"
             )
             file_reporters = [fr for fr in file_reporters if matcher.match(fr.filename)]
 
         if config.report_omit:
-            matcher = FnmatchMatcher(  # pylint: disable=too-many-function-args
+            matcher = GlobMatcher(  # pylint: disable=too-many-function-args
                 prep_patterns(config.report_omit), "report_omit"
             )
             file_reporters = [

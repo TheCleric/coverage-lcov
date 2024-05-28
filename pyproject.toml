@@ -55,7 +55,7 @@ coverage-lcov = "coverage_lcov.cli:main"
 
 [tool.poetry.dependencies]
 python = "^3.6.3"
-coverage = { extras = ["toml"], version = ">=5.5" }
+coverage = { extras = ["toml"], version = ">=7.0" }
 click = ">=7.1.2"
 types-toml = "^0.1.5"
 

@@ -8,7 +8,7 @@ from .converter import Converter
 @click.option(
     "--output_file_path", default="lcov.info", help="lcov.info output file path"
 )
-@click.option("--config_file", default=True, help="Path to .coveragerc file")
+@click.option("--config_file", default=True, type=str, help="Path to .coveragerc file")
 @click.option("--relative_path", is_flag=True, help="Use relative path in LCOV output")
 @click.option("--preview", is_flag=True, help="Preview LCOV output")
 def main(

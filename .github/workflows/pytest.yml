@@ -23,6 +23,7 @@ jobs:
         platform:
         - ubuntu-20.04
         - macos-latest
+        - macos-13
         - windows-latest
         exclude:
           # 3.6, 3.7 doesn't exist as a runner on arm64 macs

@@ -26,10 +26,8 @@ class Converter:
         self.cov_obj.get_data()
 
     def get_file_reporters(self) -> List[Union[PythonFileReporter, Any]]:
-        file_reporters: List[
-            Union[PythonFileReporter, Any]
-        ] = self.cov_obj._get_file_reporters(  # pylint: disable=protected-access
-            None
+        file_reporters: List[Union[PythonFileReporter, Any]] = (
+            self.cov_obj._get_file_reporters(None)  # pylint: disable=protected-access
         )
         config = self.cov_obj.config
 
@@ -96,7 +94,7 @@ class Converter:
             except NotPython:
                 if file_reporter.should_be_python():
                     if config.ignore_errors:
-                        msg = "Couldn't parse Python file '{}'".format(
+                        msg = "Couldn't parse Python file '{}'".format(  # pylint: disable=bad-option-value, consider-using-f-string
                             file_reporter.filename
                         )
                         self.cov_obj._warn(  # pylint: disable=protected-access

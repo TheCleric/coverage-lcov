@@ -14,6 +14,14 @@ from coverage.results import Analysis
 log = logging.getLogger("coverage_lcov.converter")
 
 
+def _unpack_file_reporters(file_reporters):
+    """Get just the file reporter from the list."""
+    return [
+        fr if isinstance(fr, PythonFileReporter) else fr[0]
+        for fr in file_reporters
+    ]
+
+
 def GlobMatcher_compat(pattern, name):
     """Cross-version compatibility function.
 
@@ -45,8 +53,10 @@ class Converter:
     def get_file_reporters(self) -> List[Union[PythonFileReporter, Any]]:
         file_reporters: List[
             Union[PythonFileReporter, Any]
-        ] = self.cov_obj._get_file_reporters(  # pylint: disable=protected-access
-            None
+        ] = _unpack_file_reporters(
+                self.cov_obj._get_file_reporters(  # pylint: disable=protected-access
+                None
+            )
         )
         config = self.cov_obj.config
 

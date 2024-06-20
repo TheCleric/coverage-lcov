@@ -54,7 +54,7 @@ jobs:
         shell: bash
         run: echo "$APPDATA\\Python\\Scripts" >> $GITHUB_PATH
 
-      - name: Poetry lock for older poetry versions
+      - name: Poetry lock for newer poetry versions
         shell: bash
         run: poetry lock
 

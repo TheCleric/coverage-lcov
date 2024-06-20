@@ -31,7 +31,7 @@ jobs:
         shell: bash
         run: echo "$HOME/.local/bin" >> $GITHUB_PATH
 
-      - name: Poetry lock for older poetry versions
+      - name: Poetry lock for newer poetry versions
         shell: bash
         run: poetry lock
 

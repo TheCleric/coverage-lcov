@@ -37,14 +37,14 @@ class Converter:
             matcher = GlobMatcher(  # pylint: disable=too-many-function-args
                 prep_patterns(config.report_include), "report_include"
             )
-            file_reporters = [fr for fr in file_reporters if matcher.match(fr.filename)]
+            file_reporters = [(fr, morf) for fr, morf in file_reporters if matcher.match(fr.filename)]
 
         if config.report_omit:
             matcher = GlobMatcher(  # pylint: disable=too-many-function-args
                 prep_patterns(config.report_omit), "report_omit"
             )
             file_reporters = [
-                fr for fr in file_reporters if not matcher.match(fr.filename)
+                (fr, morf) for fr, morf in file_reporters if not matcher.match(fr.filename)
             ]
 
         if not file_reporters:
@@ -64,12 +64,12 @@ class Converter:
 
         config = self.cov_obj.config
 
-        for file_reporter in sorted(file_reporters):
+        for file_reporter, morf in sorted(file_reporters):
             try:
                 analysis = self.cov_obj._analyze(  # pylint: disable=protected-access
-                    file_reporter
+                    morf
                 )
-                token_lines = analysis.file_reporter.source_token_lines()
+                token_lines = file_reporter.source_token_lines()
                 if self.relative_path:
                     filename = file_reporter.relative_filename()
                 else:

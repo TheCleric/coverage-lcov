@@ -14,11 +14,11 @@ from coverage.results import Analysis
 log = logging.getLogger("coverage_lcov.converter")
 
 
-def _unpack_file_reporter(file_reporter):
+def _unpack_file_reporter(fr):
     """Get just the file reporter from potentially a tupled of fr and morf."""
     return fr if isinstance(fr, PythonFileReporter) else fr[0]
 
-def _unpack_morf(file_reporter):
+def _unpack_morf(fr):
     """Get just the morf from potentially a tupled of fr and morf."""
     return fr if isinstance(fr, PythonFileReporter) else fr[1]
 

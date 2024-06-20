@@ -97,11 +97,12 @@ class Converter:
                 analysis = self.cov_obj._analyze(  # pylint: disable=protected-access
                     _unpack_morf(file_reporter)
                 )
-                token_lines = analysis.file_reporter.source_token_lines()
+                fr = _unpack_file_reporter(file_reporter)
+                token_lines = fr.source_token_lines()
                 if self.relative_path:
-                    filename = file_reporter.relative_filename()
+                    filename = fr.relative_filename()
                 else:
-                    filename = file_reporter.filename
+                    filename = fr.filename
                 output += "TN:\n"
                 output += f"SF:{filename}\n"
 

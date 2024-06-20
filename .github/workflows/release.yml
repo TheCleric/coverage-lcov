@@ -35,6 +35,10 @@ jobs:
         shell: bash
         run: poetry config virtualenvs.in-project true
 
+      - name: Poetry lock for older poetry versions
+        shell: bash
+        run: poetry lock
+
       - name: Poetry check & build
         shell: bash
         run: poetry check && poetry build

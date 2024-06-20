@@ -14,12 +14,13 @@ from coverage.results import Analysis
 log = logging.getLogger("coverage_lcov.converter")
 
 
-def _unpack_file_reporters(file_reporters):
-    """Get just the file reporter from the list."""
-    return [
-        fr if isinstance(fr, PythonFileReporter) else fr[0]
-        for fr in file_reporters
-    ]
+def _unpack_file_reporter(file_reporter):
+    """Get just the file reporter from potentially a tupled of fr and morf."""
+    return fr if isinstance(fr, PythonFileReporter) else fr[0]
+
+def _unpack_morf(file_reporter):
+    """Get just the morf from potentially a tupled of fr and morf."""
+    return fr if isinstance(fr, PythonFileReporter) else fr[1]
 
 
 def GlobMatcher_compat(pattern, name):
@@ -53,7 +54,7 @@ class Converter:
     def get_file_reporters(self) -> List[Union[PythonFileReporter, Any]]:
         file_reporters: List[
             Union[PythonFileReporter, Any]
-        ] = _unpack_file_reporters(
+        ] = (
                 self.cov_obj._get_file_reporters(  # pylint: disable=protected-access
                 None
             )
@@ -64,14 +65,14 @@ class Converter:
             matcher = GlobMatcher_compat(
                 prep_patterns(config.report_include), "report_include"
             )
-            file_reporters = [fr for fr in file_reporters if matcher.match(fr.filename)]
+            file_reporters = [fr for fr in file_reporters if matcher.match(_unpack_file_reporter(fr).filename)]
 
         if config.report_omit:
             matcher = GlobMatcher_compat(
                 prep_patterns(config.report_omit), "report_omit"
             )
             file_reporters = [
-                fr for fr in file_reporters if not matcher.match(fr.filename)
+                fr for fr in file_reporters if not matcher.match(_unpack_file_reporter(fr).filename)
             ]
 
         if not file_reporters:
@@ -94,7 +95,7 @@ class Converter:
         for file_reporter in sorted(file_reporters):
             try:
                 analysis = self.cov_obj._analyze(  # pylint: disable=protected-access
-                    file_reporter
+                    _unpack_morf(file_reporter)
                 )
                 token_lines = analysis.file_reporter.source_token_lines()
                 if self.relative_path:

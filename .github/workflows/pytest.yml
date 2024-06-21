@@ -36,15 +36,13 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      - name: Set up Python 3.6
+      - name: Set up Python ${{matrix.python-version}}
         uses: actions/setup-python@v5
         with:
           python-version: ${{matrix.python-version}}
   
       - name: Setup poetry
         uses: abatilo/actions-poetry@v2
-        with:
-          poetry-version: "1.1.10"
       
       - name: Fix urllib3 for py 3.7
         if: ${{ matrix.python-version == '3.7' }}

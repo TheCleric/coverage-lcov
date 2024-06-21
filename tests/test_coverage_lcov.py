@@ -4,7 +4,7 @@ from coverage_lcov import __version__, converter, cli
 
 
 def test_version() -> None:
-    assert __version__ == "0.2.6"
+    assert __version__ == "0.3.0"
 
 
 def test_parse_sample_coverage_file() -> None:

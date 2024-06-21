@@ -66,7 +66,7 @@ jobs:
       - name: Update pip and install setuptools
         shell: bash
         run: |
-          pip install pip --upgrade
+          python -m pip install pip --upgrade
           pip install setuptools
 
       - name: Poetry check & build

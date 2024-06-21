@@ -1,6 +1,6 @@
-import os
+# import os
 
-import toml
+# import toml
 
 # __version__ = toml.load(os.path.join(os.path.dirname(__file__), "..", "pyproject.toml"))["tool"]["poetry"]["version"]
-__version__ = "0.2.1"
+__version__ = "0.2.6"

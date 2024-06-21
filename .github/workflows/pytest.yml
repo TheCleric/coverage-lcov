@@ -17,21 +17,37 @@ jobs:
         - 3.7
         - 3.8
         - 3.9
+        - "3.10"
+        - "3.11"
+        - "3.12"
         platform:
         - ubuntu-20.04
         - macos-latest
+        - macos-13
         - windows-latest
+        exclude:
+          # 3.6, 3.7 doesn't exist as a runner on arm64 macs
+          - python-version: 3.6
+            platform: macos-latest
+          - python-version: 3.7
+            platform: macos-latest
+            
     runs-on: "${{ matrix.platform }}"
     steps:
       - uses: actions/checkout@v4
 
-      - name: Set up Python 3.6
+      - name: Set up Python ${{matrix.python-version}}
         uses: actions/setup-python@v5
         with:
-          python-version: "3.6"
+          python-version: ${{matrix.python-version}}
   
       - name: Setup poetry
         uses: abatilo/actions-poetry@v2
+      
+      - name: Fix urllib3 for py 3.7
+        if: ${{ matrix.python-version == '3.7' }}
+        shell: bash
+        run: pip3 install -I urllib3==2.0.7
 
       - name: Update PATH
         if: ${{ matrix.platorm != 'windows-latest' }}
@@ -47,6 +63,12 @@ jobs:
         shell: bash
         run: poetry config virtualenvs.in-project true
 
+      - name: Update pip and install setuptools
+        shell: bash
+        run: |
+          python -m pip install pip --upgrade
+          pip install setuptools
+
       - name: Poetry check & build
         shell: bash
         run: poetry check && poetry build
@@ -59,7 +81,7 @@ jobs:
         shell: bash
         run: poetry run mypy .
 
-      - name: Mypy
+      - name: Pylint
         shell: bash
         run: poetry run pylint coverage_lcov tests
 

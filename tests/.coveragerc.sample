@@ -1,0 +1,5 @@
+[report]
+include =
+    **/*.py
+omit =
+    this_folder_doesnt_exist/**/*.py

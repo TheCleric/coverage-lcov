@@ -55,17 +55,26 @@ coverage-lcov = "coverage_lcov.cli:main"
 
 [tool.poetry.dependencies]
 python = "^3.6.3"
-coverage = { extras = ["toml"], version = ">=5.5" }
+coverage = [
+    { extras = ["toml"], version = ">=5.5", python = "<3.8.0" },
+    { extras = ["toml"], version = ">=7.0", python = ">=3.8.0" }
+]
 click = ">=7.1.2"
-types-toml = "^0.1.5"
 
 [tool.poetry.dev-dependencies]
 black = "^21.5b0"
 isort = "^5.8.0"
 mypy = "^0.910"
-pytest = "^5.2"
+pytest = [
+    { version = "^5.2", python = "<3.10.0" },
+    { version = "^6.2", python = ">=3.10.0" },
+]
 types-click = ">=7.1.5"
-pylint = "^2.10.2"
+pylint = [
+    { version = ">=2.10.2,<2.14.0", python = "<3.8.0" },
+    { version = ">=2.14.0", python = ">=3.8.0,<4.0.0" }
+]
+tomlkit = { version = "^0.11.6", python = "<3.8.0" }
 
 [build-system]
 requires = ["poetry-core>=1.0.0"]
@@ -82,10 +91,13 @@ ignore = '**/site-packages'
 # init-hook = "import os, sys; workspace_root=os.path.realpath(os.path.join(os.path.dirname(__file__), '..', '..', '..', '..', '..', '..')); sys.path.append(workspace_root)"
 
 [tool.pylint.'MESSAGES CONTROL']
-enable = ['errors', 'warnings']
+enable = ['errors', 'warnings', 'all']
 disable = [
+    'locally-disabled',
     'missing-class-docstring',
     'missing-function-docstring',
     'missing-module-docstring',
-    # 'too-few-public-methods',
+    'no-member',
+    'suppressed-message',
+    'unknown-option-value'
 ]

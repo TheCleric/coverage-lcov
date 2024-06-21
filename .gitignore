@@ -6,3 +6,4 @@ venv
 dist
 .coverage
 lcov.info
+.tox

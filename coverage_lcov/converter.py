@@ -1,13 +1,27 @@
 import logging
-from typing import Any, List, Optional, Union
+import sys
+from typing import Any, List, Optional, Tuple, Union
 
 import coverage
-from coverage.files import FnmatchMatcher, prep_patterns
 from coverage.misc import CoverageException, NoSource, NotPython
-from coverage.python import PythonFileReporter
+from coverage.python import PythonFileReporter, FileReporter
 from coverage.results import Analysis
 
+if sys.version_info < (3, 8):  # pragma: no cover
+    from coverage.files import (
+        FnmatchMatcher,
+        prep_patterns,
+    )
+else:  # pragma: no cover
+    from coverage.files import GlobMatcher, prep_patterns
+    from coverage.types import TMorf
+
 log = logging.getLogger("coverage_lcov.converter")
+
+if sys.version_info < (3, 8):
+    FileReportersList = List[Union[PythonFileReporter, Any]]
+else:
+    FileReportersList = List[Tuple[FileReporter, TMorf]]
 
 
 class Converter:
@@ -25,34 +39,54 @@ class Converter:
         self.cov_obj.load()
         self.cov_obj.get_data()
 
-    def get_file_reporters(self) -> List[Union[PythonFileReporter, Any]]:
-        file_reporters: List[
-            Union[PythonFileReporter, Any]
-        ] = self.cov_obj._get_file_reporters(  # pylint: disable=protected-access
+    def get_file_reporters(self) -> FileReportersList:
+        file_reporters: FileReportersList = self.cov_obj._get_file_reporters(  # pylint: disable=protected-access
             None
         )
         config = self.cov_obj.config
 
         if config.report_include:
-            matcher = FnmatchMatcher(  # pylint: disable=too-many-function-args
-                prep_patterns(config.report_include), "report_include"
-            )
-            file_reporters = [fr for fr in file_reporters if matcher.match(fr.filename)]
+            if sys.version_info < (3, 8):
+                matcher = FnmatchMatcher(
+                    prep_patterns(config.report_include), "report_include"
+                )
+                file_reporters = [
+                    fr for fr in file_reporters if matcher.match(fr.filename)
+                ]
+            else:
+                matcher = GlobMatcher(
+                    prep_patterns(config.report_include),
+                )
+                file_reporters = [
+                    (fr, morf)
+                    for fr, morf in file_reporters
+                    if matcher.match(fr.filename)
+                ]
 
         if config.report_omit:
-            matcher = FnmatchMatcher(  # pylint: disable=too-many-function-args
-                prep_patterns(config.report_omit), "report_omit"
-            )
-            file_reporters = [
-                fr for fr in file_reporters if not matcher.match(fr.filename)
-            ]
+            if sys.version_info < (3, 8):
+                matcher = FnmatchMatcher(
+                    prep_patterns(config.report_omit), "report_omit"
+                )
+                file_reporters = [
+                    fr for fr in file_reporters if not matcher.match(fr.filename)
+                ]
+            else:
+                matcher = GlobMatcher(
+                    prep_patterns(config.report_omit),
+                )
+                file_reporters = [
+                    (fr, morf)
+                    for fr, morf in file_reporters
+                    if not matcher.match(fr.filename)
+                ]
 
-        if not file_reporters:
+        if not file_reporters:  # pragma: no-cover
             raise CoverageException("No data to report.")
 
         return file_reporters
 
-    def get_lcov(self) -> str:
+    def get_lcov(self) -> str:  # pylint: disable=too-many-branches
         """Get LCOV output
 
         This is shamelessly adapted from https://github.com/nedbat/coveragepy/blob/master/coverage/report.py
@@ -64,12 +98,24 @@ class Converter:
 
         config = self.cov_obj.config
 
-        for file_reporter in sorted(file_reporters):
+        for file_reporter_item in sorted(file_reporters):
+            if sys.version_info < (3, 8):
+                file_reporter = file_reporter_item
+            else:
+                file_reporter, morf = file_reporter_item
             try:
-                analysis = self.cov_obj._analyze(  # pylint: disable=protected-access
-                    file_reporter
-                )
-                token_lines = analysis.file_reporter.source_token_lines()
+                if sys.version_info < (3, 8):
+                    analysis = (
+                        self.cov_obj._analyze(  # pylint: disable=protected-access
+                            file_reporter
+                        )
+                    )
+                    token_lines = analysis.file_reporter.source_token_lines()
+                else:
+                    analysis = self.cov_obj._analyze(  # pylint: disable=protected-access
+                        morf
+                    )
+                    token_lines = file_reporter.source_token_lines()
                 if self.relative_path:
                     filename = file_reporter.relative_filename()
                 else:
@@ -94,17 +140,19 @@ class Converter:
                     raise
 
             except NotPython:
-                if file_reporter.should_be_python():
-                    if config.ignore_errors:
-                        msg = "Couldn't parse Python file '{}'".format(
-                            file_reporter.filename
-                        )
-                        self.cov_obj._warn(  # pylint: disable=protected-access
-                            msg, slug="couldnt-parse"
-                        )
-
+                if sys.version_info < (3, 8):
+                    if file_reporter.should_be_python():
+                        if config.ignore_errors:
+                            msg = "Couldn't parse Python file '{}'".format(  # pylint: disable=useless-suppression, bad-option-value, consider-using-f-string
+                                file_reporter.filename
+                            )
+                            self.cov_obj._warn(  # pylint: disable=protected-access
+                                msg, slug="couldnt-parse"
+                            )
                     else:
                         raise
+                else:
+                    raise
 
         return output
 

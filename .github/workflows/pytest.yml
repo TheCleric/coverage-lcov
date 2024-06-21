@@ -63,6 +63,12 @@ jobs:
         shell: bash
         run: poetry config virtualenvs.in-project true
 
+      - name: Update pip and install setuptools
+        shell: bash
+        run: |
+          pip install pip --upgrade
+          pip install setuptools
+
       - name: Poetry check & build
         shell: bash
         run: poetry check && poetry build

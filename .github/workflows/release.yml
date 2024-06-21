@@ -26,14 +26,12 @@ jobs:
   
       - name: Setup poetry
         uses: abatilo/actions-poetry@v2
+        with:
+          poetry-version: "1.1.10"
 
       - name: Update PATH
         shell: bash
         run: echo "$HOME/.local/bin" >> $GITHUB_PATH
-
-      - name: Poetry lock for newer poetry versions
-        shell: bash
-        run: poetry lock
 
       - name: Configure poetry
         shell: bash

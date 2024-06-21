@@ -43,6 +43,13 @@ jobs:
   
       - name: Setup poetry
         uses: abatilo/actions-poetry@v2
+        with:
+          poetry-version: "1.1.10"
+      
+      - name: Fix urllib3 for py 3.7
+        if: ${{ matrix.python-version == '3.7' }}
+        shell: bash
+        run: pip3 install -I urllib3==2.0.7
 
       - name: Update PATH
         if: ${{ matrix.platorm != 'windows-latest' }}
@@ -53,10 +60,6 @@ jobs:
         if: ${{ matrix.platform == 'windows-latest' }}
         shell: bash
         run: echo "$APPDATA\\Python\\Scripts" >> $GITHUB_PATH
-
-      - name: Poetry lock for newer poetry versions
-        shell: bash
-        run: poetry lock
 
       - name: Configure poetry
         shell: bash

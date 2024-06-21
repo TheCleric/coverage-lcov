@@ -17,6 +17,18 @@ def main(
     config_file: str,
     relative_path: bool,
     preview: bool,
+) -> None:  # pragma: no cover
+    __main_internal__(
+        data_file_path, output_file_path, config_file, relative_path, preview
+    )
+
+
+def __main_internal__(
+    data_file_path: str,
+    output_file_path: str,
+    config_file: str,
+    relative_path: bool,
+    preview: bool,
 ) -> None:
     converter = Converter(
         data_file_path=data_file_path,
